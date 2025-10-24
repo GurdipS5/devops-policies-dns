@@ -1,0 +1,17 @@
+policy "ad-dns-no-stale-records" {
+  title = "DNS should not contain stale or tombstoned records"
+  resource "ad.dns.record" {
+    check {
+      title = "No tombstoned records"
+      condition = resource.is_tombstoned == false
+      message = "Record '{{ resource.name }}' is tombstoned."
+      severity = "medium"
+    }
+    check {
+      title = "Records have recent timestamp"
+      condition = resource.timestamp_age_days < 30
+      message = "Record '{{ resource.name }}' has not been updated in over 30 days."
+      severity = "low"
+    }
+  }
+}
